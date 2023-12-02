@@ -7,13 +7,13 @@ const lines = fs.readFileSync('./data.txt','utf-8').trim().split('\n');
 
 function part1(lines){
     //answer: 54940
+    // could have probably just regex it to be just numbers and get the first character
     const values = lines.map((line)=> {
         let lineObj = line.split('');
         let first = lineObj.find((v)=> !Number.isNaN(Number(v)))
         let last = lineObj.findLast((v)=> !Number.isNaN(Number(v)))
         return Number(first+last);
     }); 
-    
     return values.reduce((s,v)=> s+v);
 }
 
@@ -21,8 +21,6 @@ function part2(lines){
     //answer: 54208
     //replace with numbers
     const resultArray = lines.map((line)=> replaceWordsWithNumbers(line));
-    // console.log(resultArray,'resultArray')
-
     //reuse part one
     return part1(resultArray);
 }
@@ -49,8 +47,7 @@ function replaceWordsWithNumbers(inputString) {
         currentIndex++;
     }
     return resultString;
-  }
+}
   
-  console.log(part1(lines),'part1');
-  console.log(part2(lines),'part2');
-  
+console.log(part1(lines),'part1');
+console.log(part2(lines),'part2');
