@@ -36,7 +36,6 @@ function part2(lines) {
 	return count;
 }
 
-
 /** FUNCTION : getWinCount */
 function getWinCount(raceTime, raceDistance) {
 	let count = 0;
@@ -47,7 +46,6 @@ function getWinCount(raceTime, raceDistance) {
 	}
 	return count;
 }
-
 
 console.log(part1(lines), "part1");
 console.log(part2(lines), "part2");

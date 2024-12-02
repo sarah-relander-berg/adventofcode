@@ -1,13 +1,11 @@
 import fs from "fs";
 
 // const lines = fs.readFileSync("./example.txt", "utf-8").trim().split("\n");
-const lines = fs.readFileSync('./data.txt','utf-8').trim().split('\n');
-
-// console.log(lines,'lines')
+const lines = fs.readFileSync("./data.txt", "utf-8").trim().split("\n");
 
 /** CHALLENGE: PART ONE */
 function part1(lines) {
-	// answer: 579439039
+	// answer: 579439039 (35)
 
 	const [seeds, categoryMaps] = getMapData(lines);
 
@@ -18,10 +16,7 @@ function part1(lines) {
 			seedLocation = mapArray.reduce((tempSeedLocation, mapLine) => {
 				const [mapValue, mapStart, mapLength] = mapLine;
 
-				return seedLocation >= mapStart &&
-					seedLocation < mapStart + mapLength
-					? mapValue + (seedLocation - mapStart)
-					: tempSeedLocation;
+				return seedLocation >= mapStart && seedLocation < mapStart + mapLength ? mapValue + (seedLocation - mapStart) : tempSeedLocation;
 			}, seedLocation);
 		});
 		return seedLocation;
@@ -32,26 +27,24 @@ function part1(lines) {
 
 /** CHALLENGE: PART TWO */
 function part2(lines) {
-	//answer: 7873084
+	//answer: 7873084 (46)
 
 	const [seeds, categoryMaps] = getMapData(lines);
-    //backward search time!
+
+	//backward search time!
 	const categoryMapsReverse = [...categoryMaps].reverse();
 
 	const seedGroups = [];
 	seeds.forEach((r, i) => {
 		if (i % 2 === 0) {
-			seedGroups.push([
-				seeds[i],
-				seeds[i] + seeds[i + 1] - 1,
-			]);
+			seedGroups.push([seeds[i], seeds[i] + seeds[i + 1] - 1]);
 		}
 	});
 
 	let location = -1;
 	let find = false;
 	while (!find) {
-        location++;
+		location++;
 		const seedValue = findSeedValue(location, [...categoryMapsReverse]);
 		if (isValidSeed(seedValue, seedGroups)) {
 			find = true;
@@ -76,11 +69,8 @@ const getMapData = (lines) => {
 		} else if (line.includes("map")) {
 			currentMap++;
 		} else if (line) {
-			if (!categoryMaps[currentMap])
-				categoryMaps[currentMap] = [];
-			categoryMaps[currentMap].push(
-				line.split(" ").map((value) => Number(value))
-			);
+			if (!categoryMaps[currentMap]) categoryMaps[currentMap] = [];
+			categoryMaps[currentMap].push(line.split(" ").map((value) => Number(value)));
 		}
 	});
 	return [seeds, categoryMaps];
@@ -88,31 +78,30 @@ const getMapData = (lines) => {
 
 /** FUNCTION : findSeedValue */
 const findSeedValue = (location, maps) => {
-    if (maps.length === 0) return location;
-    const mapArr = maps.shift();
-    const len = mapArr.length;
-    for (let i = 0; i < len; i++) {
-        // const [mapLineStart, mapLineValue, mapLineLength] = mapArr[i]; //makes it slow
-        const mapLineStart = mapArr[i][0];
-        const mapLineEnd = mapArr[i][0] + mapArr[i][2];
-        if (location >= mapLineStart && location <= mapLineEnd) {
-            const diff = mapLineStart - mapArr[i][1];
-            return findSeedValue(location - diff, maps);
-        }
-    }
-    return findSeedValue(location, maps);
-}
+	if (maps.length === 0) return location;
+	const mapArr = maps.shift();
+	const len = mapArr.length;
+	for (let i = 0; i < len; i++) {
+		// const [mapLineStart, mapLineValue, mapLineLength] = mapArr[i]; //makes it slow
+		const mapLineStart = mapArr[i][0];
+		const mapLineEnd = mapArr[i][0] + mapArr[i][2];
+		if (location >= mapLineStart && location <= mapLineEnd) {
+			const diff = mapLineStart - mapArr[i][1];
+			return findSeedValue(location - diff, maps);
+		}
+	}
+	return findSeedValue(location, maps);
+};
 
 /** FUNCTION : isValidSeed */
 const isValidSeed = (seed, seedGroups) => {
-    for (const group of seedGroups) {
-        if (seed >= group[0] && seed <= group[1]) {
-            return true;
-        }
-    }
-    return false;
-}
-
+	for (const group of seedGroups) {
+		if (seed >= group[0] && seed <= group[1]) {
+			return true;
+		}
+	}
+	return false;
+};
 
 console.log(part1(lines), "part1");
 console.log(part2(lines), "part2");
