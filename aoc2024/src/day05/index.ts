@@ -13,30 +13,17 @@ const getDependencyMap = (rules: string[]) => {
   return dependencies;
 };
 
-const getValidUpdates = (dependencies: Map<any, any>, updates: number[][]) => {
-  return updates.filter(
-    (update) =>
-      !update.some((before, i) =>
-        update.slice(i + 1).some((after) => {
-          const afterDependencies = dependencies.get(after);
-          return afterDependencies?.has(before);
-        }),
-      ),
-  );
-};
-
-const getInvalidUpdates = (
-  dependencies: Map<any, any>,
-  updates: number[][],
-) => {
-  return updates.filter((update) =>
+const validateUpdates = (dependencies: Map<any, any>, updates: number[][]) => {
+  const isInvalid = (update: number[]) =>
     update.some((before, i) =>
       update.slice(i + 1).some((after) => {
         const afterDependencies = dependencies.get(after);
         return afterDependencies?.has(before);
       }),
-    ),
-  );
+    );
+
+  const validUpdates = updates.filter((update) => !isInvalid(update));
+  return validUpdates;
 };
 
 const getMiddleSum = (updates: number[][]) => {
@@ -52,7 +39,7 @@ const part1 = (rawInput: string) => {
   const rulesArr = rules.split("\n");
   const updatesArr = updates.split("\n").map((x) => x.split(",").map(Number));
   const dependencies = getDependencyMap(rulesArr);
-  const validUpdates = getValidUpdates(dependencies, updatesArr);
+  const validUpdates = validateUpdates(dependencies, updatesArr);
   return getMiddleSum(validUpdates);
 };
 
@@ -62,7 +49,10 @@ const part2 = (rawInput: string) => {
   const rulesArr = rules.split("\n");
   const updatesArr = updates.split("\n").map((x) => x.split(",").map(Number));
   const dependencies = getDependencyMap(rulesArr);
-  const invalidUpdates = getInvalidUpdates(dependencies, updatesArr);
+  const validUpdates = validateUpdates(dependencies, updatesArr);
+  const invalidUpdates = updatesArr.filter(
+    (update) => !validUpdates.includes(update),
+  );
 
   const orderedUpdates = invalidUpdates.map((update) => {
     const ordered = [...update];
